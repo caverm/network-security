@@ -3,7 +3,6 @@
 #include <pcap.h>
 #include <arpa/inet.h>
 
-
 /* Ethernet header */
 struct ethheader {
   u_char  ether_dhost[6]; /* destination host address */
@@ -87,9 +86,20 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
       printf("\n");
     
       //print IP Header information
-      printf("[IP Header] src ip : %s / dsp ip : %s\n", 
-  	  inet_ntoa(ip->iph_sourceip), inet_ntoa(ip->iph_destip));
-   
+ 
+      // 문제점 
+
+      // printf("[IP Header] src ip : %s / dsp ip : %s\n", 
+  	  //            inet_ntoa(ip->iph_sourceip), inet_ntoa(ip->iph_destip));
+
+      // 해결책
+
+      char src_ip[16]; // 255.255.255.255 에서 숫자 12칸, 점 3칸, 마지막 널 1칸
+      char dst_ip[16];
+
+      inet_ntop(AF_INET, &(ip->iph_sourceip), src_ip, 16);
+      inet_ntop(AF_INET, &(ip->iph_destip)  , dst_ip, 16);
+      printf("[IP Header] src ip : %s / dsp ip : %s\n", src_ip, dst_ip);
 
       //print TCP Header information 
       printf("[TCP Header] src port : %u / dsp port : %u\n",
@@ -112,11 +122,11 @@ int main()
   pcap_t *handle;
   char errbuf[PCAP_ERRBUF_SIZE];
   struct bpf_program fp;
-  char filter_exp[] = "tcp"; //filter
+  char filter_exp[] = "tcp port 80"; //filter
   bpf_u_int32 net;
 
-  // Step 1: Open live pcap session on NIC with name enp0s3
-  handle = pcap_open_live("ens33", BUFSIZ, 1, 1000, errbuf);
+  // Step 1: Open live pcap session on NIC
+  handle = pcap_open_live("eth0", BUFSIZ, 1, 1000, errbuf);
 
   // Step 2: Compile filter_exp into BPF psuedo-code
   pcap_compile(handle, &fp, filter_exp, 0, net);
