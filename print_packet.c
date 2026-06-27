@@ -64,11 +64,11 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
 	    
       //TCP Header
       int ip_header_len = ip->iph_ihl * 4;
-      struct tcpheader *tcp = (struct tcpheader *)((u_char *)ip + ip_header_len);
+      struct tcpheader *tcp = (struct tcpheader *)(packet + sizeof(struct ethheader) + ip_header_len);
 
       //Application hierarchy Message
       int tcp_header_len = TH_OFF(tcp)* 4;
-      char* data = (char*)((u_char *)tcp + tcp_header_len);
+      char* data = (char*)(packet + sizeof(struct ethheader) + ip_header_len + tcp_header_len);
  
       //print Ethernet Header information
       printf("[Ethernet Header] src mac : ");
