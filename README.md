@@ -2,6 +2,7 @@
 [whs] network-security
 
 필수!!!
+sudo apt update
 sudo apt install libpcap-dev 명령어를 실행해 라이브러리 설치 필요
 
 1. 프로그램 실행 오류 시 ip a 명령어를 실행하여 네트워크 인터페이스를 확인
